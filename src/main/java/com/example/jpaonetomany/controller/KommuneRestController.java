@@ -11,12 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 //PostMapping = man indsætter ny
 //PutMapping = man ændrer en allerede eksisterende
 
 
 @RestController
+@CrossOrigin
 public class KommuneRestController
 {
     @Autowired
@@ -37,5 +39,35 @@ public class KommuneRestController
     {
         List<Kommune> kommuneList = kommuneRepository.findAll();
         return kommuneList;
+    }
+
+    @PostMapping("/kommune")
+    public ResponseEntity<Kommune> postRegion(@RequestBody Kommune kommune)
+    {
+        System.out.println("Indsætter ny kommune");
+        System.out.println(kommune);
+
+        Kommune savedKommune = kommuneRepository.save(kommune);
+        if(savedKommune == null)
+        {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            return new ResponseEntity<>(savedKommune, HttpStatus.CREATED);
+        }
+    }
+
+    @PutMapping("/kommune/{kode}")
+    public ResponseEntity<Kommune> putRegion(@PathVariable String kode, @RequestBody Kommune kommune)
+    {
+        Optional<Kommune> orgKommune = kommuneRepository.findById(kode);
+        if(orgKommune.isPresent())
+        {
+            kommune.setKode(kode); //hvis man ændrer i "kode", så overskriver den det eksisterende objekt og ikke laver et nyt objekt
+            kommuneRepository.save(kommune);
+            return new ResponseEntity<>(kommune, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Kommune(), HttpStatus.NOT_FOUND);
+        }
+
     }
 }
