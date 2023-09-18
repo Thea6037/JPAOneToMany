@@ -57,7 +57,7 @@ public class KommuneRestController
     }
 
     @PutMapping("/kommune/{kode}")
-    public ResponseEntity<Kommune> putRegion(@PathVariable String kode, @RequestBody Kommune kommune)
+    public ResponseEntity<Kommune> putKommune(@PathVariable String kode, @RequestBody Kommune kommune)
     {
         Optional<Kommune> orgKommune = kommuneRepository.findById(kode);
         if(orgKommune.isPresent())
@@ -69,5 +69,18 @@ public class KommuneRestController
             return new ResponseEntity<>(new Kommune(), HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @DeleteMapping("/kommune/{kode}")
+    public ResponseEntity<String> deleteKommune(@PathVariable String kode)
+    {
+        Optional<Kommune> orgKommune = kommuneRepository.findById(kode);
+        if(orgKommune.isPresent())
+        {
+            kommuneRepository.deleteById(kode);
+            return ResponseEntity.ok("Kommune deleted");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Kommune not found");
+        }
     }
 }
