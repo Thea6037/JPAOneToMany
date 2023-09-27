@@ -1,5 +1,6 @@
 package com.example.jpaonetomany.controller;
 
+import com.example.jpaonetomany.exception.ResourceNotFoundException;
 import com.example.jpaonetomany.model.Kommune;
 import com.example.jpaonetomany.model.Region;
 import com.example.jpaonetomany.repositories.KommuneRepository;
@@ -26,6 +27,13 @@ public class KommuneRestController
 
     @Autowired
     KommuneRepository kommuneRepository;
+
+    @GetMapping("/kommunenavn/{navn}")
+    public ResponseEntity<Kommune> getKommuneByName(@PathVariable String navn)
+    {
+        Kommune kommune = kommuneRepository.findKommuneByNavn(navn).orElseThrow(() -> new ResourceNotFoundException("Kommune ikke fundet med navn" + navn));
+        return new ResponseEntity<>(kommune, HttpStatus.OK);
+    }
 
     @GetMapping("/getkommuner")
     public List<Kommune> getKommuner()
